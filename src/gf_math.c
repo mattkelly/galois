@@ -2,33 +2,26 @@
 
 #include <stdio.h>
 
-void printf_bin(ubyte_t dec)
+void printf_bin(uint8_t dec)
 {
-    ubyte_t i;
-    for (i = 0; i <= 7; ++i)
+    uint8_t i;
+    for (i = 0; i < 8; ++i)
     {
-        if ((dec & 0x80) == 0x80)
-        {
-            printf("1");
-        }
-        else
-        {
-            printf("0");
-        }
+        printf("%u", (dec & 0x80) == 0x80);
         dec <<= 1;
     }
 }
 
-ubyte_t gf_add(ubyte_t a, ubyte_t b)
+uint8_t gf_add(uint8_t a, uint8_t b)
 {
     return a ^ b;
 }
 
-ubyte_t gf_multiply(ubyte_t a, ubyte_t b)
+uint8_t gf_multiply(uint8_t a, uint8_t b)
 {
-    ubyte_t i;
-    ubyte_t acc = 0x00; // Accumulator
-    ubyte_t msb; // Current MSB of a
+    uint8_t i;
+    uint8_t acc = 0x00; // Accumulator
+    uint8_t msb; // Current MSB of a
 
     for (i = 0; i < 8; ++i)
     {
@@ -37,14 +30,14 @@ ubyte_t gf_multiply(ubyte_t a, ubyte_t b)
         {
             acc ^= a;
         }
+
         // Store MSB of a, then shift it off
         msb = a & 0x80;
         a <<= 1;
 
         // If MSB of a was 1, add field polynomial to a
-        if (1 == msb)
-        {
-            a ^= FIELD_POLY;
+        if (1 == msb) {
+            a = gf_add(a, FIELD_POLY);
         }
 
         // Advance to next bit of b
@@ -54,13 +47,33 @@ ubyte_t gf_multiply(ubyte_t a, ubyte_t b)
     return acc;
 }
 
-void gf_divide(ubyte_t a, ubyte_t b, ubyte_t *q, ubyte_t *r, ubyte_t field_poly)
+uint8_t gf_pow(uint8_t a, uint8_t b)
 {
-    ubyte_t i = 0;
-    ubyte_t j;
-    ubyte_t quotient = 0x00; // Quotient
-    ubyte_t rem = b; // Remainder
-    ubyte_t msb_a; // Current MSB of a
+    if (0 == b)
+    {
+        return 1;
+    }
+    else if (1 == b)
+    {
+        return a;
+    }
+
+    uint8_t z = a;
+    for (int i = 0; i < b - 1; ++i)
+    {
+        z = gf_multiply(z, a);
+    }
+
+    return z;
+}
+
+void gf_divide(uint8_t a, uint8_t b, uint8_t *q, uint8_t *r, uint8_t field_poly)
+{
+    uint8_t i = 0;
+    uint8_t j;
+    uint8_t quotient = 0x00; // Quotient
+    uint8_t rem = b; // Remainder
+    uint8_t msb_a; // Current MSB of a
 
     // Perform initial alignment
     msb_a = a & 0x80;
@@ -97,7 +110,7 @@ void gf_divide(ubyte_t a, ubyte_t b, ubyte_t *q, ubyte_t *r, ubyte_t field_poly)
     *r = rem;
 }
 
-ubyte_t gf_inverse(ubyte_t a, ubyte_t b)
+uint8_t gf_inverse(uint8_t a, uint8_t b)
 {
     // Map 0x00 to 0x00
     if (a == 0x00)
@@ -105,10 +118,10 @@ ubyte_t gf_inverse(ubyte_t a, ubyte_t b)
         return 0x00;
     }
 
-    ubyte_t rem[8];
-    ubyte_t aux[8];
-    ubyte_t q, r;
-    ubyte_t i;
+    uint8_t rem[8];
+    uint8_t aux[8];
+    uint8_t q, r;
+    uint8_t i;
 
     rem[0] = b;
     rem[1] = a;

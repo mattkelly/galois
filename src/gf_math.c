@@ -36,7 +36,8 @@ uint8_t gf_multiply(uint8_t a, uint8_t b)
         a <<= 1;
 
         // If MSB of a was 1, add field polynomial to a
-        if (1 == msb) {
+        if (msb)
+        {
             a = gf_add(a, FIELD_POLY);
         }
 

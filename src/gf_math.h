@@ -36,7 +36,7 @@ void gf_divide(uint8_t a, uint8_t b, uint8_t *q, uint8_t *r, uint8_t field_poly)
  * using the Extended Euclid Algorithm. That is, given:
  *   A(x), B(X)
  * Find u(x), w(x) such that:
- *   GCD( A(x), B(x) ) = u(x)A(x) + w(x)B(x)
+ *   GCD(A(x), B(x)) = u(x)A(x) + w(x)B(x)
  * Returns only the multiplicative inverse of A(x)
  */
 uint8_t gf_inverse(uint8_t a, uint8_t b);
